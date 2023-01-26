@@ -2,12 +2,15 @@ import plugins from '../plugins';
 import posts from '../posts';
 import topics from '.';
 
+import { TopicObject } from '../types';
+
+
 interface Options {
     mainTid: number,
     newTopicTitle: string,
 }
 
-export default function (Topics:topics) {
+export default function (Topics:TopicObject) {
     Topics.merge = async function (tids: string[], uid: number, options: Options) {
         // options = options || {};
         // idk if should delete this or nah

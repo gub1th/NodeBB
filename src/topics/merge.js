@@ -17,7 +17,7 @@ const posts_1 = __importDefault(require("../posts"));
 function default_1(Topics) {
     Topics.merge = function (tids, uid, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            //options = options || {};
+            // options = options || {};
             // idk if should delete this or nah
             const topicsData = yield Topics.getTopicsFields(tids, ['scheduled']);
             if (topicsData.some(t => t.scheduled)) {
