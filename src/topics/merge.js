@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,16 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const plugins = require('../plugins');
-const posts = require('../posts');
-module.exports = function (Topics) {
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const plugins_1 = __importDefault(require("../plugins"));
+const posts_1 = __importDefault(require("../posts"));
+function default_1(Topics) {
     Topics.merge = function (tids, uid, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            options = options || {};
+            //options = options || {};
+            // idk if should delete this or nah
             const topicsData = yield Topics.getTopicsFields(tids, ['scheduled']);
             if (topicsData.some(t => t.scheduled)) {
                 throw new Error('[[error:cant-merge-scheduled]]');
             }
+            // const oldestTid = findOldestTopic(tids.map(a =>parseInt(a));
             const oldestTid = findOldestTopic(tids);
             let mergeIntoTid = oldestTid;
             if (options.mainTid) {
@@ -25,7 +32,7 @@ module.exports = function (Topics) {
             else if (options.newTopicTitle) {
                 mergeIntoTid = yield createNewTopic(options.newTopicTitle, oldestTid);
             }
-            const otherTids = tids.sort((a, b) => a - b)
+            const otherTids = tids.sort((a, b) => parseInt(a) - parseInt(b))
                 .filter(tid => tid && parseInt(tid, 10) !== parseInt(mergeIntoTid, 10));
             for (const tid of otherTids) {
                 /* eslint-disable no-await-in-loop */
@@ -42,10 +49,10 @@ module.exports = function (Topics) {
                 });
             }
             yield Promise.all([
-                posts.updateQueuedPostsTopic(mergeIntoTid, otherTids),
+                posts_1.default.updateQueuedPostsTopic(mergeIntoTid, otherTids),
                 updateViewCount(mergeIntoTid, tids),
             ]);
-            plugins.hooks.fire('action:topic.merge', {
+            plugins_1.default.hooks.fire('action:topic.merge', {
                 uid: uid,
                 tids: tids,
                 mergeIntoTid: mergeIntoTid,
@@ -62,7 +69,7 @@ module.exports = function (Topics) {
                 cid: topicData.cid,
                 title: title,
             };
-            const result = yield plugins.hooks.fire('filter:topic.mergeCreateNewTopic', {
+            const result = yield plugins_1.default.hooks.fire('filter:topic.mergeCreateNewTopic', {
                 oldestTid: oldestTid,
                 params: params,
             });
@@ -80,4 +87,5 @@ module.exports = function (Topics) {
     function findOldestTopic(tids) {
         return Math.min.apply(null, tids);
     }
-};
+}
+exports.default = default_1;
