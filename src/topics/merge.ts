@@ -5,6 +5,15 @@ import topics from '.';
 import { TopicObject } from '../types';
 
 
+interface topics {
+    merge: (tids: string[], uid: number, options: Options) => Promise<number>;
+    createNewTopic: (title: string, oldestTid: number) => Promise<string>;
+    updateViewCount: (mergeIntoTid: number, tids: string[]) => Promise<void>;
+    findOldestTopic: (tids:string[]) => string;
+}
+
+
+
 interface Options {
     mainTid: number,
     newTopicTitle: string,
@@ -12,7 +21,7 @@ interface Options {
 
 export default function (Topics:TopicObject) {
     Topics.merge = async function (tids: string[], uid: number, options: Options) {
-        // options = options || {};
+        options = options || {};
         // idk if should delete this or nah
 
         const topicsData = await Topics.getTopicsFields(tids, ['scheduled']);
@@ -84,6 +93,6 @@ export default function (Topics:TopicObject) {
     }
 
     function findOldestTopic(tids:string[]) {
-        return Math.min.apply(null, tids);
+        return Math.min.apply(null, tids.map(a =>parseInt(a)));
     }
 }
