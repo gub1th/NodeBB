@@ -5,23 +5,32 @@ import topics from '.';
 import { TopicObject } from '../types';
 
 
-interface topics {
+interface top {
     merge: (tids: string[], uid: number, options: Options) => Promise<number>;
     createNewTopic: (title: string, oldestTid: number) => Promise<string>;
     updateViewCount: (mergeIntoTid: number, tids: string[]) => Promise<void>;
     findOldestTopic: (tids:string[]) => string;
+
+    getPids(tid: string) : Promise<number[]>;
+
+    movePostToTopic(callerUid:number, pid:number, tid:string) : Promise<number[]>;
+    setTopicField(tid: string, field: string, value: number) : Promise<void>;
+    setTopicFields(tid: string, data: string) : Promise<void>;
+    getTopicFields(tid: TopicObject['tid'], fields: string[]) : Promise<TopicObject>;
+    getTopicsFields(tids: string[], fields: string[]) : Promise<TopicObject>;
+    delete(tid: string, uid: number) : Promise<number[]>;
+    create(tid: string) : Promise<number[]>;
+
 }
-
-
 
 interface Options {
     mainTid: number,
     newTopicTitle: string,
 }
 
-export default function (Topics:TopicObject) {
+export default function (Topics: top) {
     Topics.merge = async function (tids: string[], uid: number, options: Options) {
-        options = options || {};
+        // options = options || {};
         // idk if should delete this or nah
 
         const topicsData = await Topics.getTopicsFields(tids, ['scheduled']);
@@ -71,8 +80,8 @@ export default function (Topics:TopicObject) {
         return mergeIntoTid;
     };
 
-    async function createNewTopic(title: string, oldestTid: number) {
-        const topicData = await Topics.getTopicFields(oldestTid, ['uid', 'cid']);
+    async function createNewTopic(title: string, oldestTid: string) {
+        const topicData = await Topics.getTopicFields(parseInt(oldestTid), ['uid', 'cid']);
         const params = {
             uid: topicData.uid,
             cid: topicData.cid,
@@ -86,13 +95,13 @@ export default function (Topics:TopicObject) {
         return tid;
     }
 
-    async function updateViewCount(mergeIntoTid: number, tids: string[]) {
+    async function updateViewCount(mergeIntoTid: string, tids: string[]) {
         const topicData = await Topics.getTopicsFields(tids, ['viewcount']);
         const totalViewCount = topicData.reduce((count, topic) => count + parseInt(topic.viewcount, 10), 0);
         await Topics.setTopicField(mergeIntoTid, 'viewcount', totalViewCount);
     }
 
     function findOldestTopic(tids:string[]) {
-        return Math.min.apply(null, tids.map(a =>parseInt(a)));
+        return Math.min.apply(null, tids.map(a => parseInt(a)));
     }
 }
