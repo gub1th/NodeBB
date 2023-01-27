@@ -63,7 +63,7 @@ function default_1(Topics) {
     };
     function createNewTopic(title, oldestTid) {
         return __awaiter(this, void 0, void 0, function* () {
-            const topicData = yield Topics.getTopicFields(parseInt(oldestTid), ['uid', 'cid']);
+            const topicData = yield Topics.getTopicFields(parseInt(oldestTid, 10), ['uid', 'cid']);
             const params = {
                 uid: topicData.uid,
                 cid: topicData.cid,
@@ -85,7 +85,7 @@ function default_1(Topics) {
         });
     }
     function findOldestTopic(tids) {
-        return Math.min.apply(null, tids.map(a => parseInt(a)));
+        return Math.min.apply(null, tids.map(a => parseInt(a, 10)));
     }
 }
 exports.default = default_1;

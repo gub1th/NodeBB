@@ -1,6 +1,5 @@
 import plugins from '../plugins';
 import posts from '../posts';
-import topics from '.';
 
 import { TopicObject } from '../types';
 
@@ -15,9 +14,9 @@ interface top {
 
     movePostToTopic(callerUid:number, pid:number, tid:string) : Promise<number[]>;
     setTopicField(tid: string, field: string, value: number) : Promise<void>;
-    setTopicFields(tid: string, data: string) : Promise<void>;
+    setTopicFields(tid: string, data: any) : Promise<void>;
     getTopicFields(tid: TopicObject['tid'], fields: string[]) : Promise<TopicObject>;
-    getTopicsFields(tids: string[], fields: string[]) : Promise<TopicObject>;
+    getTopicsFields(tids: string[], fields: string[]) : Promise<TopicObject[]>;
     delete(tid: string, uid: number) : Promise<number[]>;
     create(tid: string) : Promise<number[]>;
 
@@ -81,7 +80,7 @@ export default function (Topics: top) {
     };
 
     async function createNewTopic(title: string, oldestTid: string) {
-        const topicData = await Topics.getTopicFields(parseInt(oldestTid), ['uid', 'cid']);
+        const topicData = await Topics.getTopicFields(parseInt(oldestTid, 10), ['uid', 'cid']);
         const params = {
             uid: topicData.uid,
             cid: topicData.cid,
@@ -102,6 +101,6 @@ export default function (Topics: top) {
     }
 
     function findOldestTopic(tids:string[]) {
-        return Math.min.apply(null, tids.map(a => parseInt(a)));
+        return Math.min.apply(null, tids.map(a => parseInt(a, 10)));
     }
 }
